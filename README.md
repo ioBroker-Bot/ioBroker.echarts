@@ -115,7 +115,7 @@ You can debug view charts locally with:
   -->
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.1.0 (2026-03-02)
 - (@GermanBluefox) Trying to rebuild the canvas by the start
 
 ### 3.0.2 (2026-02-16)

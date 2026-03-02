@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "echarts",
-    "version": "3.0.2",
+    "version": "3.1.0",
     "news": {
+      "3.1.0": {
+        "en": "Trying to rebuild the canvas by the start",
+        "de": "Versuchen, die Leinwand von Anfang an neu zu bauen",
+        "ru": "Попытка восстановить холст к началу",
+        "pt": "Tentando reconstruir a tela no início",
+        "nl": "Proberen om het canvas bij de start te herbouwen",
+        "fr": "Essayer de reconstruire la toile avant le début",
+        "it": "Cercando di ricostruire la tela all'inizio",
+        "es": "Intentando reconstruir el lienzo para el comienzo",
+        "pl": "Próbując odbudować płótno na początku",
+        "uk": "Спробувати перебудувати полотно стартом",
+        "zh-cn": "试图在开始前重建画布"
+      },
       "3.0.2": {
         "en": "Calculate values in the legend\nAdded noLoader option to the widget",
         "de": "Werte in der Legende berechnen\nNoLoader Option zum Widget hinzugefügt",
@@ -80,19 +93,6 @@
         "pl": "Potwierdź konfigurację przy starcie\nPoprawiony zoom & Pan wykresów z myszką\nDodano możliwość zmiany tła legendy\nPokaż kolor linii w legendzie, jeśli jest to okno dialogowe\nPokaż kartę echartów na stronie admin intro",
         "uk": "Почати налаштування\nВиправлено масштабування та панель діаграм з мишкою\nДодана можливість змінити легендний фон\nПоказати колір ліній в легенді, якщо це діалогове вікно\nПоказати картку echarts на сторінці адміністратора",
         "zh-cn": "启动时验证配置\n用鼠标修正了图表的缩放( P)\n添加更改传奇背景的可能性\n显示图例中的行色, 如果它是对话框\n在管理内页显示 echarts 牌"
-      },
-      "2.0.4": {
-        "en": "Correcting locale for x-axis\nCorrecting widget",
-        "de": "Ortskorrektur für x-Achse\nKorrektur Widget",
-        "ru": "Корректировка лока для x-оси\nИсправление виджета",
-        "pt": "Correção local para eixo x\nWidget de correção",
-        "nl": "Lokale corrigeren voor x-as\nWidget wordt gecorrigeerd",
-        "fr": "Corriger le local pour l'axe des x\nCorrection du widget",
-        "it": "Correggere locale per x-assi\nCorreggere widget",
-        "es": "Corrección local para eje x\nWidget corrector",
-        "pl": "Korekcja lokalizacji osi x\nKorekcja widżetu",
-        "uk": "Виправлення локалізації для осі x\nВиправлення віджету",
-        "zh-cn": "纠正 x 轴的定位\n校正部件"
       }
     },
     "titleLang": {
