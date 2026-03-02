@@ -10,6 +10,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  *
  */
 const node_fs_1 = require("node:fs");
+const node_child_process_1 = require("node:child_process");
+const node_path_1 = require("node:path");
+const node_module_1 = require("node:module");
 const moment = require("moment");
 require("moment/locale/en-gb");
 require("moment/locale/es");
@@ -22,7 +25,6 @@ require("moment/locale/ru");
 require("moment/locale/zh-cn");
 require("moment/locale/de");
 const echarts_1 = require("echarts");
-const canvas_1 = require("canvas");
 const adapter_core_1 = require("@iobroker/adapter-core");
 const ChartModel_1 = require("./lib/ChartModel");
 const ChartOption_1 = require("./lib/ChartOption");
@@ -30,7 +32,9 @@ const socketSimulator_1 = require("./lib/socketSimulator");
 // let echartsInit:
 //     | ((canvas: HTMLElement | null, theme?: string | object | null, opts?: EChartsInitOpts) => EChartsType)
 //     | undefined;
+// undefined = not yet attempted, null = attempted but failed, value = loaded successfully
 let createCanvas;
+let CanvasClass;
 let JsDomClass;
 function calcTextWidth(text, fontSize) {
     // try to simulate
@@ -51,15 +55,36 @@ class EchartsAdapter extends adapter_core_1.Adapter {
     }
     // Todo: queue requests as  global.window is "global"
     async renderImage(options) {
-        if (!createCanvas) {
+        if (JsDomClass === undefined) {
             try {
-                createCanvas = (await Promise.resolve().then(() => require('canvas'))).createCanvas;
                 JsDomClass = (await Promise.resolve().then(() => require('jsdom'))).JSDOM;
-                this.socketSimulator = (0, socketSimulator_1.getSocket)(this);
+                this.socketSimulator ||= (0, socketSimulator_1.getSocket)(this);
             }
             catch (e) {
-                this.log.error(`Cannot find required modules: ${e}`);
-                throw new Error('Cannot find required modules: looks like it is not possible to generate charts on your Hardware/OS');
+                JsDomClass = null;
+                this.log.error(`Cannot load jsdom module: ${e}`);
+            }
+        }
+        if (!JsDomClass) {
+            throw new Error('Cannot render chart: jsdom module is not available on this system');
+        }
+        const needsCanvas = options.renderer && options.renderer !== 'svg';
+        if (needsCanvas) {
+            if (createCanvas === undefined) {
+                try {
+                    const canvasModule = await Promise.resolve().then(() => require('canvas'));
+                    createCanvas = canvasModule.createCanvas;
+                    CanvasClass = canvasModule.Canvas;
+                }
+                catch {
+                    createCanvas = null;
+                    CanvasClass = null;
+                }
+            }
+            if (!createCanvas) {
+                throw new Error(`Cannot render as "${options.renderer}": canvas module is not available on this system. ` +
+                    'Only SVG rendering is supported. ' +
+                    'To fix: cd /opt/iobroker/node_modules/canvas && sudo -u iobroker npm install --omit=dev --build-from-source');
             }
         }
         return new Promise((resolve, reject) => {
@@ -109,7 +134,7 @@ class EchartsAdapter extends adapter_core_1.Adapter {
                         data = `data:image/png;base64,${canvas
                             .toBuffer('image/png', {
                             compressionLevel: options.compressionLevel || 3,
-                            filters: options.filters || canvas_1.Canvas.PNG_FILTER_NONE,
+                            filters: options.filters || CanvasClass.PNG_FILTER_NONE,
                         })
                             .toString('base64')}`;
                         break;
@@ -151,6 +176,53 @@ class EchartsAdapter extends adapter_core_1.Adapter {
                 else {
                     resolve(data);
                 }
+            });
+        });
+    }
+    async tryRebuildCanvas() {
+        let canvasDir;
+        try {
+            const req = (0, node_module_1.createRequire)(__filename);
+            canvasDir = (0, node_path_1.dirname)(req.resolve('canvas/package.json'));
+        }
+        catch {
+            this.log.warn('Cannot locate canvas package directory — rebuild skipped');
+            return false;
+        }
+        this.log.info(`Rebuilding canvas from source in ${canvasDir} (this may take a few minutes)...`);
+        return new Promise(resolve => {
+            const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+            const child = (0, node_child_process_1.spawn)(npm, ['install', '--omit=dev', '--build-from-source'], {
+                cwd: canvasDir,
+                stdio: ['ignore', 'pipe', 'pipe'],
+            });
+            child.stdout?.on('data', (data) => {
+                for (const line of data.toString().split('\n')) {
+                    if (line.trim()) {
+                        this.log.debug(`canvas rebuild: ${line.trim()}`);
+                    }
+                }
+            });
+            child.stderr?.on('data', (data) => {
+                for (const line of data.toString().split('\n')) {
+                    if (line.trim()) {
+                        this.log.debug(`canvas rebuild: ${line.trim()}`);
+                    }
+                }
+            });
+            child.on('close', code => {
+                if (code === 0) {
+                    this.log.info('canvas rebuilt successfully');
+                    resolve(true);
+                }
+                else {
+                    this.log.warn(`canvas rebuild failed with exit code ${code}`);
+                    resolve(false);
+                }
+            });
+            child.on('error', err => {
+                this.log.warn(`canvas rebuild error: ${err.message}`);
+                resolve(false);
             });
         });
     }
@@ -280,6 +352,49 @@ class EchartsAdapter extends adapter_core_1.Adapter {
         }
         if (await this.fixSystemObject()) {
             this.log.debug('Added chart view to system object');
+        }
+        // Pre-load rendering modules so issues are visible in the log at startup
+        try {
+            JsDomClass = (await Promise.resolve().then(() => require('jsdom'))).JSDOM;
+            this.socketSimulator = (0, socketSimulator_1.getSocket)(this);
+        }
+        catch (e) {
+            JsDomClass = null;
+            this.log.error(`Cannot load jsdom module: ${e}. Chart rendering will not be available.`);
+        }
+        try {
+            const canvasModule = await Promise.resolve().then(() => require('canvas'));
+            createCanvas = canvasModule.createCanvas;
+            CanvasClass = canvasModule.Canvas;
+        }
+        catch (e) {
+            this.log.warn(`Canvas module failed to load: ${e}. Trying to rebuild from source...`);
+            const rebuilt = await this.tryRebuildCanvas();
+            if (rebuilt) {
+                // Clear require cache so the freshly built native binary is picked up
+                for (const key of Object.keys(require.cache)) {
+                    if (key.includes('/canvas/') || key.includes('\\canvas\\')) {
+                        delete require.cache[key];
+                    }
+                }
+                try {
+                    const canvasModule = await Promise.resolve().then(() => require('canvas'));
+                    createCanvas = canvasModule.createCanvas;
+                    CanvasClass = canvasModule.Canvas;
+                    this.log.info('Canvas loaded successfully after rebuild. PNG/JPG/PDF rendering is available.');
+                }
+                catch (e2) {
+                    createCanvas = null;
+                    CanvasClass = null;
+                    this.log.warn(`Canvas still failed after rebuild: ${e2}. Only SVG rendering is supported.`);
+                }
+            }
+            else {
+                createCanvas = null;
+                CanvasClass = null;
+                this.log.warn('PNG/JPG/PDF chart rendering is not available — only SVG is supported. ' +
+                    'To fix manually: cd /opt/iobroker/node_modules/canvas && sudo -u iobroker npm install --omit=dev --build-from-source');
+            }
         }
         /*renderImage({preset: 'Test', theme: 'dark', renderer: 'png', background: '#000000'})
             .then(data => {
