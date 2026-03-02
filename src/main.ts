@@ -22,7 +22,7 @@ import 'moment/locale/zh-cn';
 import 'moment/locale/de';
 
 import { type EChartsType, init as echartsInit } from 'echarts';
-import { Canvas, type JpegConfig, type PdfConfig, type PngConfig } from 'canvas';
+import type { Canvas, JpegConfig, PdfConfig, PngConfig } from 'canvas';
 import { type JSDOM } from 'jsdom';
 
 import { Adapter, type AdapterOptions } from '@iobroker/adapter-core';
@@ -36,6 +36,7 @@ import { getSocket } from './lib/socketSimulator';
 //     | ((canvas: HTMLElement | null, theme?: string | object | null, opts?: EChartsInitOpts) => EChartsType)
 //     | undefined;
 let createCanvas: ((width: number, height: number, type?: 'pdf' | 'svg') => Canvas) | undefined;
+let CanvasClass: typeof Canvas | undefined;
 let JsDomClass: typeof JSDOM | undefined;
 
 function calcTextWidth(text: string, fontSize?: number | string): number {
@@ -62,7 +63,9 @@ class EchartsAdapter extends Adapter {
     async renderImage(options: EchartsOptions): Promise<string> {
         if (!createCanvas) {
             try {
-                createCanvas = (await import('canvas')).createCanvas;
+                const canvasModule = await import('canvas');
+                createCanvas = canvasModule.createCanvas;
+                CanvasClass = canvasModule.Canvas;
                 JsDomClass = (await import('jsdom')).JSDOM;
                 this.socketSimulator = getSocket(this);
             } catch (e) {
@@ -138,7 +141,7 @@ class EchartsAdapter extends Adapter {
                             data = `data:image/png;base64,${canvas
                                 .toBuffer('image/png', {
                                     compressionLevel: options.compressionLevel || 3,
-                                    filters: options.filters || Canvas.PNG_FILTER_NONE,
+                                    filters: options.filters || CanvasClass.PNG_FILTER_NONE,
                                 } as PngConfig)
                                 .toString('base64')}`;
                             break;
