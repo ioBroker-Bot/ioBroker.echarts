@@ -115,6 +115,9 @@ You can debug view charts locally with:
   -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Trying to rebuild the canvas by the start
+
 ### 3.0.2 (2026-02-16)
 - (@GermanBluefox) Calculate values in the legend
 - (@GermanBluefox) Added noLoader option to the widget
