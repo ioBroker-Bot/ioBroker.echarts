@@ -115,6 +115,9 @@ You can debug view charts locally with:
   -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 3.1.0 (2026-03-02)
 - (@GermanBluefox) Trying to rebuild the canvas by the start
 
