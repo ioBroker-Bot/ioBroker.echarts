@@ -1373,6 +1373,19 @@ export default class Line extends React.Component<LineProps, LineState> {
                             label="Y-Axis ticks"
                         />
                     ) : null}
+                    {this.props.line.chartType !== 'polar' && ownYAxis ? (
+                        <IONumberField
+                            value={(this.props.line as ChartLineConfigMore & { yAxisOffset?: number }).yAxisOffset}
+                            updateValue={(value: number): void => {
+                                const line: ChartLineConfigMore & { yAxisOffset?: number } = JSON.parse(
+                                    JSON.stringify(this.props.line),
+                                );
+                                line.yAxisOffset = value || 0;
+                                this.props.updateLine(this.props.index, line);
+                            }}
+                            label="Y-Axis offset (px)"
+                        />
+                    ) : null}
                 </Box>
                 {/* Other settings */}
                 <Box

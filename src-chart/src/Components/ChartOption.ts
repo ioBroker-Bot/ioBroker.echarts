@@ -658,10 +658,18 @@ class ChartOption {
                 color = series[chartIndex]?.itemStyle?.color as string;
             }
 
+            // yAxisOffset shifts the Y-axis label strip left or right so multiple
+            // axes on the same side don't overlap each other.
+            // Positive values move a "left" axis further left, or a "right" axis
+            // further right (identical to the Apache ECharts `offset` property).
+            const yAxisOffset: number =
+                parseFloat(oneLine.yAxisOffset as unknown as string) || 0;
+
             return {
                 type: 'value',
                 min: yMin,
                 max: yMax,
+                offset: yAxisOffset,
                 position:
                     oneLine.yaxe === 'left' || oneLine.yaxe === 'off' || oneLine.yaxe === 'leftColor'
                         ? 'left'
