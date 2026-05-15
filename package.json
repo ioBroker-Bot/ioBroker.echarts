@@ -46,9 +46,11 @@
     "@types/react-dom": "^18.3.7",
     "axios": "^1.13.6",
     "colorette": "^2.0.20",
-    "puppeteer": "^24.37.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
+  },
+  "optionalDependencies": {
+    "puppeteer": "^24.37.5"
   },
   "main": "build/main.js",
   "files": [
