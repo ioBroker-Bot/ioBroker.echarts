@@ -115,6 +115,10 @@ You can debug view charts locally with:
   -->
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires js-controller >= 6.0.11 now.
+
 ### 3.1.0 (2026-03-02)
 - (@GermanBluefox) Trying to rebuild the canvas by the start
 
