@@ -658,10 +658,18 @@ class ChartOption {
                 color = series[chartIndex]?.itemStyle?.color as string;
             }
 
+            // yAxisOffset shifts the Y-axis label strip left or right so multiple
+            // axes on the same side don't overlap each other.
+            // Positive values move a "left" axis further left, or a "right" axis
+            // further right (identical to the Apache ECharts `offset` property).
+            const yAxisOffset: number =
+                parseFloat(oneLine.yAxisOffset as unknown as string) || 0;
+
             return {
                 type: 'value',
                 min: yMin,
                 max: yMax,
+                offset: yAxisOffset,
                 position:
                     oneLine.yaxe === 'left' || oneLine.yaxe === 'off' || oneLine.yaxe === 'leftColor'
                         ? 'left'
@@ -1454,18 +1462,21 @@ class ChartOption {
                     }
 
                     if (position !== 'right') {
-                        if (wMin > padLeft) {
-                            padLeft = wMin;
+                        // Also account for yAxisOffset so shifted axes don't overlap the legend/chart area
+                        const axisOffset = parseFloat((_yAxis as any).offset) || 0;
+                        if (wMin + axisOffset > padLeft) {
+                            padLeft = wMin + axisOffset;
                         }
-                        if (wMax > padLeft) {
-                            padLeft = wMax;
+                        if (wMax + axisOffset > padLeft) {
+                            padLeft = wMax + axisOffset;
                         }
                     } else {
-                        if (wMin > padRight) {
-                            padRight = wMin;
+                        const axisOffset = parseFloat((_yAxis as any).offset) || 0;
+                        if (wMin + axisOffset > padRight) {
+                            padRight = wMin + axisOffset;
                         }
-                        if (wMax > padRight) {
-                            padRight = wMax;
+                        if (wMax + axisOffset > padRight) {
+                            padRight = wMax + axisOffset;
                         }
                     }
                 });
