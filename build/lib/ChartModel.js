@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Parse a query string into its parts.
- * Copied from @iobroker/adapter-react-v5/Components/Utils
+ * Copied from adapter-react-v5/Components/Utils
  */
 function parseQuery(query) {
     query = (query || '').toString().replace(/^\?/, '');
@@ -246,7 +246,7 @@ class ChartModel {
             return null;
         })
             .then((systemConfig) => {
-            this.systemConfig = systemConfig?.common ? systemConfig.common : {};
+            this.systemConfig = systemConfig?.common || {};
             this.defaultHistory = this.systemConfig.defaultHistory;
             return this.analyseAndLoadConfig(config);
         });
@@ -317,7 +317,7 @@ class ChartModel {
         }
         this.seriesData = [];
         this.barData = [];
-        this.barCategories = null;
+        this.barCategories = undefined;
         if (this.updateInterval) {
             clearInterval(this.updateInterval);
             this.updateInterval = null;
@@ -334,9 +334,8 @@ class ChartModel {
                     return;
                 }
                 this.config = normalizeConfig(obj.native.data);
-                this.config.useComma =
-                    this.config.useComma === undefined ? this.systemConfig.isFloatComma : this.config.useComma;
-                this.config.lang = this.systemConfig.language;
+                this.config.useComma = this.config.useComma ?? this.systemConfig?.isFloatComma ?? true;
+                this.config.lang = this.systemConfig?.language || 'en';
                 this.config.live = getInt(this.config.live);
                 this.config.debug = this.debug;
                 this.config.presetId = this.preset;
@@ -371,12 +370,11 @@ class ChartModel {
             }
         }
         else {
-            this.config.useComma =
-                this.config.useComma === undefined
-                    ? this.systemConfig.isFloatComma === true
-                    : this.config.useComma === true;
-            this.config.lang = this.systemConfig.language;
-            this.config.live = getInt(this.config.live);
+            this.config.useComma = this.config.useComma
+                ? this.systemConfig?.isFloatComma === true
+                : this.config.useComma === true;
+            this.config.lang = this.systemConfig?.language || 'en';
+            this.config.live = getInt(this.config?.live);
             this.config.debug = this.debug;
             await this.readData();
             if (!this.serverSide && this.config.live && !this.zoomData?.stopLive) {
@@ -541,7 +539,7 @@ class ChartModel {
                 this.config.aggregateBar = 60;
             }
         }
-        option = option || {};
+        option ||= {};
         if (this.config.aggregateBar === 15) {
             // align start and stop to 15 minutes
             const startDate = new Date(startTs);
@@ -1472,7 +1470,7 @@ class ChartModel {
                     } */
                 try {
                     const state = await this.socket.getState(mark.lowerValueOrId);
-                    if (state && state.val !== undefined && state.val !== null) {
+                    if (state?.val != null) {
                         mark.lowerValue = getFloat(state.val);
                     }
                     else {

@@ -882,7 +882,7 @@ export default class Line extends React.Component<LineProps, LineState> {
                         value={this.props.line.instance}
                         updateValue={(value: string): void => {
                             const line: ChartLineConfigMore = JSON.parse(JSON.stringify(this.props.line));
-                            line.instance = value as ChartType;
+                            line.instance = value;
                             this.props.updateLine(this.props.index, line);
                         }}
                         label="Source"

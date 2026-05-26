@@ -535,14 +535,14 @@ export default class App extends GenericApp<AppProps, AppState> {
                 if (line.commonYAxis === '') {
                     delete line.commonYAxis;
                 } else {
-                    line.commonYAxis = parseInt(line.commonYAxis as unknown as string, 10);
+                    line.commonYAxis = parseInt(line.commonYAxis || '0', 10);
                 }
             }
             if (typeof line.fill === 'string') {
                 if (line.fill === '') {
                     delete line.fill;
                 } else {
-                    line.fill = parseFloat(line.fill as unknown as string);
+                    line.fill = parseFloat(line.fill || '0');
                 }
             }
         });
@@ -665,7 +665,7 @@ export default class App extends GenericApp<AppProps, AppState> {
             // load preset
             const obj = await this.socket.getObject(selectedId as string);
             if (obj?.native?.data) {
-                const hash = `#preset=${selectedId as string}`;
+                const hash = `#preset=${selectedId}`;
                 if (window.location.hash !== hash) {
                     window.location.hash = hash;
                 }

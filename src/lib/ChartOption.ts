@@ -389,7 +389,7 @@ class ChartOption {
                     animation: false,
                     // step: oneLine.chartType === 'steps' ? 'end' : (oneLine.chartType === 'stepsStart' ? 'start' : undefined) ,
                     // smooth: oneLine.chartType === 'spline',
-                    data: data[i] as BarSeries,
+                    data: data[i],
                     color,
                 };
                 return cfg;
@@ -662,8 +662,7 @@ class ChartOption {
             // axes on the same side don't overlap each other.
             // Positive values move a "left" axis further left, or a "right" axis
             // further right (identical to the Apache ECharts `offset` property).
-            const yAxisOffset: number =
-                parseFloat(oneLine.yAxisOffset as unknown as string) || 0;
+            const yAxisOffset: number = parseFloat(oneLine.yAxisOffset as unknown as string) || 0;
 
             return {
                 type: 'value',
@@ -845,7 +844,7 @@ class ChartOption {
             }
             simpleValue = val.value as string | number;
         } else {
-            simpleValue = val as string | number | null | undefined | boolean;
+            simpleValue = val as ioBroker.StateValue;
         }
 
         // If mapping exist for state values
