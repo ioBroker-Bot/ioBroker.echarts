@@ -436,6 +436,8 @@ You can debug view charts locally with:
 
 - (@GermanBluefox) initial release
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 
 ioBroker.echarts is available under the Apache License V2.
