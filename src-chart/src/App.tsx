@@ -98,10 +98,16 @@ class App extends Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
 
-        const themeInstance = App.createTheme();
-
         const query = Utils.parseQuery(window.location.search);
         const queryHash = Utils.parseQuery((window.location.hash || '').replace(/^#/, ''));
+
+        // Optional ?theme=light|dark|blue override (also accepted from the URL hash). When
+        // omitted or set to 'auto', Utils.getThemeName() falls back to App.themeName in
+        // localStorage / the OS prefers-color-scheme. Used by the ioBroker.devices widget
+        // to embed the chart with a specific theme regardless of the host's localStorage.
+        const themeOverride =
+            (query.theme as ThemeName | undefined) || (queryHash.theme as ThemeName | undefined) || undefined;
+        const themeInstance = App.createTheme(themeOverride === ('auto' as ThemeName) ? undefined : themeOverride);
 
         this.state = {
             connected: false,

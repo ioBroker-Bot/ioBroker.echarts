@@ -351,8 +351,8 @@ export default function App(): React.JSX.Element {
                     <DevEchart
                         key={`${presetId}-${size}`}
                         widget={widget as any}
-                        stateContext={ctx as any}
-                        settings={widgetSettings as any}
+                        stateContext={ctx}
+                        settings={widgetSettings}
                         onHide={() => {}}
                     />
                 </div>
