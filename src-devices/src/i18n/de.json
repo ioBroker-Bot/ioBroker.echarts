@@ -1,0 +1,10 @@
+{
+    "EchartsViewer": "Echarts Diagramm",
+    "echarts_presetId": "Echarts-Preset",
+    "echarts_presetId_help": "Gespeichertes Diagramm (echarts.<Instanz>.<Name>) zum Anzeigen auswählen.",
+    "echarts_readOnly": "Nur Lesen",
+    "echarts_readOnly_help": "Zoom-/Edit-Bedienelemente im eingebetteten Diagramm ausblenden.",
+    "echarts_noLoader": "Ladeanzeige ausblenden",
+    "echarts_transparentBackground": "Transparenter Hintergrund",
+    "echarts_noPreset": "Kein Preset ausgewählt"
+}

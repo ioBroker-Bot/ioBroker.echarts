@@ -162,6 +162,28 @@
       }
     },
     "platform": "Javascript/Node.js",
+    "deviceWidgets": {
+      "components": [
+        {
+          "name": "EchartComponent",
+          "label": "EchartsViewer",
+          "description": {
+            "en": "Shows a saved echarts preset",
+            "de": "Zeigt ein gespeichertes Echarts-Preset",
+            "ru": "Показывает сохраненный пресет echarts",
+            "pt": "Mostra um preset echarts salvo",
+            "nl": "Toont een opgeslagen echarts preset",
+            "fr": "Affiche un preset echarts enregistré",
+            "it": "Mostra un preset echarts salvato",
+            "es": "Muestra un preset de echarts guardado",
+            "pl": "Pokazuje zapisany preset echarts",
+            "uk": "Показує збережений пресет echarts",
+            "zh-cn": "显示保存的echarts预设"
+          },
+          "icon": "chart.png"
+        }
+      ]
+    },
     "connectionType": "local",
     "dataSource": "push",
     "icon": "echarts.png",

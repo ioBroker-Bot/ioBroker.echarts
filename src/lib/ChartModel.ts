@@ -1857,7 +1857,7 @@ class ChartModel {
                 break;
             }
         }
-        if (changed ) {
+        if (changed) {
             this.onUpdateFunc?.(null, this.actualValues);
         }
     };
