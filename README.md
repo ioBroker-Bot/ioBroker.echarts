@@ -115,6 +115,9 @@ You can debug view charts locally with:
   -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (@GermanBluefox) Corrected the devices widget
+
 ### 3.1.1 (2026-05-27)
 - (@Brainbug01) Added yAxisOffset to separate multiple Y-axes visually
 - (@GermanBluefox) Added the devices widget
